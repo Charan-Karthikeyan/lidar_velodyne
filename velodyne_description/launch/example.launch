@@ -8,6 +8,27 @@
   <arg name="verbose" default="false"/>
   <arg name="world_name" default="$(find velodyne_description)/world/example.world"/>
 
+  <!-- The nodes and the position of 1 velodyne sensor -->
+  <arg name="first_vel" default="vel1"/>
+  <arg name="vel1_x_pos" default ="0.0"/>
+  <arg name="vel1_y_pos" default ="0.0"/>
+  <arg name="vel1_z_pos" default="0.0"/>
+  <arg name="publish_topic1" default="/velodyne_points1"/>
+
+<!-- The nodes and the position of 2 velodyne sensor -->
+  <arg name="sec_vel" default="vel2"/>
+  <arg name="vel2_x_pos" default="0.0"/>
+  <arg name="vel2_y_pos" default="0.0"/>
+  <arg name="vel2_z_pos" default="0.0"/>
+  <arg name="publish_topic2" default="/velodyne_points2" />
+
+<!-- The nodes and the position of 3 velodyne sensor -->
+  <arg name="third_vel" default="vel3"/>
+  <arg name="vel3_x_pos" default="0.0"/>
+  <arg name="vel3_y_pos" default="0.0"/>
+  <arg name="vel3_z_pos" default="0.0"/>
+  <arg name="publish_topic3" default="/velodyne_points3" />
+
   <!-- Start gazebo and load the world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch" >
     <arg name="paused" value="$(arg paused)"/>
@@ -20,15 +41,18 @@
   </include>
 
   <!-- Spawn the example robot -->
+<!-- Convert each spwan into a group and add initial pose and parse to the example file, the loction will be taken care of by the node  and dont need anything to do with the urdf   -->
   <arg name="gpu" default="false"/>
-  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find velodyne_description)/urdf/example.urdf.xacro' gpu:=$(arg gpu)" />
-  <node pkg="gazebo_ros" type="spawn_model" name="spawn_model" args="-urdf -param /robot_description -model example"/>
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find velodyne_description)/urdf/example.urdf.xacro' gpu:=$(arg gpu) publish_topic_val:=$(arg publish_topic1)" /> 
+  <!-- Code to spawn the model on gazebo  -->
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_model" args="-urdf -model $(arg first_vel) -x $(arg vel1_x_pos) -y $(arg vel1_y_pos) -z $(arg vel1_z_pos) -param /robot_description "/>
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="30.0" />
   </node>
 
   <!-- RViz -->
-  <arg name="rviz" default="true"/>
-  <node if="$(arg rviz)" pkg="rviz" type="rviz" name="$(anon rviz)" respawn="false" output="screen" args="-d $(find velodyne_description)/rviz/example.rviz" />
+<!--   <arg name="rviz" default="true"/>
+  <node if="$(arg rviz)" pkg="rviz" type="rviz" name="$(anon rviz)" respawn="false" output="screen" args="-d $(find velodyne_description)/rviz/example.rviz" /> -->
 
 </launch>
+
